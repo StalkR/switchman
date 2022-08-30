@@ -1,0 +1,13 @@
+Source: switchman
+Section: net
+Priority: extra
+Maintainer: StalkR <stalkr@stalkr.net>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Homepage: https://github.com/StalkR/switchman
+
+Package: switchman
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Switchman for OpenVPN/WireGuard
+ A small web server to switch OpenVPN/WireGuard servers.
