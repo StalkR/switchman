@@ -100,7 +100,7 @@ func (s *openVPNserver) Switch(server string) error {
     return err
   }
   if server == current {
-    return fmt.Errorf("server %v already current", server)
+    return nil // not an error, just nothing to do
   }
 
   b, err := os.ReadFile(s.config)
