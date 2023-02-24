@@ -111,8 +111,11 @@ func (s *wireGuardServer) Switch(server string) error {
 		return err
 	}
 
-	if out, err := exec.Command("wg-quick", "down", "wg0").CombinedOutput(); err != nil {
-		return fmt.Errorf("could not stop wg: %v - %v", err, string(out))
+	// check if running before stop or it will fail
+	if err := exec.Command("wg", "show", "wg0").Run(); err == nil {
+		if out, err := exec.Command("wg-quick", "down", "wg0").CombinedOutput(); err != nil {
+			return fmt.Errorf("could not stop wg: %v - %v", err, string(out))
+		}
 	}
 
 	for ; ; time.Sleep(time.Second) {
