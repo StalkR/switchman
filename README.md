@@ -1,4 +1,4 @@
-# Switchman #
+# Switchman
 
 [![Build Status][build-img]][build] [![Godoc][godoc-img]][godoc]
 
@@ -16,7 +16,7 @@ Example:
 
     $ go run . -listen :81
 
-# Setup #
+# Setup
 
 Install go package, create Debian package, install:
 
@@ -27,10 +27,10 @@ Install go package, create Debian package, install:
 
 Configure in `/etc/default/switchman` and start with `/etc/init.d/switchman start`.
 
-# License #
+# License
 
 [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-# Bugs, feature requests, questions #
+# Bugs, feature requests, questions
 
 Create a [new issue](https://github.com/StalkR/switchman/issues/new).
