@@ -18,10 +18,10 @@ Example:
 
 # Setup
 
-Install go package, create Debian package, install:
+Clone this repo, create Debian package, install:
 
-    $ go get -u github.com/StalkR/switchman
-    $ cd $GOPATH/src/github.com/StalkR/switchman
+    $ git clone github.com/StalkR/switchman
+    $ cd switchman
     $ fakeroot debian/rules clean binary
     $ sudo dpkg -i ../switchman_1-1_amd64.deb
 
