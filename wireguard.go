@@ -72,7 +72,7 @@ func (s *wireGuardServer) List() ([]string, error) {
 	return servers, nil
 }
 
-var disableEndpointRE = regexp.MustCompile("(?m)^(Endpoint = .*)$")
+var endpointRE = regexp.MustCompile("(?m)^(Endpoint = .*)$")
 
 func (s *wireGuardServer) Switch(server string) error {
 	found := false
@@ -101,7 +101,7 @@ func (s *wireGuardServer) Switch(server string) error {
 	if err != nil {
 		return err
 	}
-	b = disableEndpointRE.ReplaceAll(b, []byte("#$1"))
+	b = endpointRE.ReplaceAll(b, []byte("#$1"))
 	enableRE, err := regexp.Compile("(?m)^#(Endpoint = " + regexp.QuoteMeta(server) + ")$")
 	if err != nil {
 		return err
@@ -111,44 +111,23 @@ func (s *wireGuardServer) Switch(server string) error {
 		return err
 	}
 
+	return restartWireguard()
+}
+
+func restartWireguard() error {
 	// check if running before stop or it will fail
 	if err := exec.Command("wg", "show", "wg0").Run(); err == nil {
 		if out, err := exec.Command("wg-quick", "down", "wg0").CombinedOutput(); err != nil {
 			return fmt.Errorf("could not stop wg: %v - %v", err, string(out))
 		}
 	}
-
 	for ; ; time.Sleep(time.Second) {
 		if err := exec.Command("ip", "link", "list", "dev", "wg0").Run(); err != nil {
 			break
 		}
 	}
-
 	if out, err := exec.Command("wg-quick", "up", "wg0").CombinedOutput(); err != nil {
 		return fmt.Errorf("could not start wg: %v - %v", err, string(out))
 	}
-
 	return nil
-}
-
-func (s *wireGuardServer) Next() error {
-	list, err := s.List()
-	if err != nil {
-		return err
-	}
-	current, err := s.Current()
-	if err != nil {
-		return err
-	}
-	var next string
-	for i, e := range list {
-		if e == current {
-			next = list[(i+1)%len(list)]
-			break
-		}
-	}
-	if next == "" {
-		return fmt.Errorf("could not find next server")
-	}
-	return s.Switch(next)
 }

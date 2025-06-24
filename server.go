@@ -110,10 +110,32 @@ func (s *server) handleNext(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain")
 
-	if err := s.Next(); err != nil {
+	if err := next(s); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	fmt.Fprintf(w, "ok\n")
+}
+
+func next(s switchable) error {
+	list, err := s.List()
+	if err != nil {
+		return err
+	}
+	current, err := s.Current()
+	if err != nil {
+		return err
+	}
+	var next string
+	for i, e := range list {
+		if e == current {
+			next = list[(i+1)%len(list)]
+			break
+		}
+	}
+	if next == "" {
+		return fmt.Errorf("could not find next server")
+	}
+	return s.Switch(next)
 }

@@ -7,8 +7,11 @@
 [godoc]: https://godoc.org/github.com/StalkR/switchman
 [godoc-img]: https://godoc.org/github.com/StalkR/switchman?status.png
 
-A small web server to switch OpenVPN/WireGuard servers (remote/endpoints), so
-it can change the corresponding exits.
+switchman is a small web server to switch VPN exits. Supported VPN:
+
+- Mullvad: switch between servers fetched from their API, single config (`wg0.conf`)
+- basic OpenVPN: switch between `remote` commented out with `;`, single config (`*.conf`)
+- basic WireGuard: switch between `Endpoint` commented out with `#`, single config (`wg0.conf`)
 
 It listens on TCP IPv4/IPv6 at the specified port.
 
