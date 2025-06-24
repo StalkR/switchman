@@ -126,12 +126,10 @@ func (s *mullvadServer) listEndpoints() ([]mullvadEndpoint, error) {
 	for _, country := range s.api.Countries {
 		for _, city := range country.Cities {
 			for _, relay := range city.Relays {
-				for _, port := range []int{51820, relay.MultihopPort} {
-					servers = append(servers, mullvadEndpoint{
-						Endpoint:  fmt.Sprintf("%s%s:%d", relay.Hostname, mullvadRelaySuffix, port),
-						PublicKey: relay.PublicKey,
-					})
-				}
+				servers = append(servers, mullvadEndpoint{
+					Endpoint:  fmt.Sprintf("%s%s:51820", relay.Hostname, mullvadRelaySuffix),
+					PublicKey: relay.PublicKey,
+				})
 			}
 		}
 	}
