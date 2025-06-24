@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"sort"
 	"text/template"
 )
 
@@ -52,6 +53,7 @@ func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	sort.Strings(list)
 
 	if err := indexTmpl.Execute(w, struct {
 		Current string
