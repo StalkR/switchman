@@ -7,7 +7,7 @@
 [godoc]: https://godoc.org/github.com/StalkR/switchman
 [godoc-img]: https://godoc.org/github.com/StalkR/switchman?status.png
 
-switchman is a small web server to switch VPN exits. Supported VPN:
+switchman is a small web server to switch VPN exits. Supported VPNs:
 
 - Mullvad: switch between servers fetched from their API, single config (`wg0.conf`)
 - basic OpenVPN: switch between `remote` commented out with `;`, single config (`*.conf`)

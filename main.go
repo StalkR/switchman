@@ -1,9 +1,11 @@
-// Binary switchman is a small web server to switch VPN exits.
-//
-// Supported VPN:
-//   - Mullvad: switch between servers fetched from their API, single config (`wg0.conf`)
-//   - basic OpenVPN: switch between `remote` commented out with `;`, single config (`*.conf`)
-//   - basic WireGuard: switch between `Endpoint` commented out with `#`, single config (`wg0.conf`)
+/*
+Binary switchman is a small web server to switch VPN exits.
+
+Supported VPNs:
+  - Mullvad: switch between servers fetched from their API, single config (`wg0.conf`)
+  - basic OpenVPN: switch between `remote` commented out with `;`, single config (`*.conf`)
+  - basic WireGuard: switch between `Endpoint` commented out with `#`, single config (`wg0.conf`)
+*/
 package main
 
 import (
@@ -11,9 +13,15 @@ import (
 	"flag"
 	"fmt"
 	"log"
+
+	"github.com/StalkR/switchman/mullvad"
+	"github.com/StalkR/switchman/openvpn"
+	"github.com/StalkR/switchman/wireguard"
 )
 
 var (
+	flagListen = flag.String("listen", ":81", "Port to listen on for HTTP requests.")
+
 	flagMullvad   = flag.Bool("mullvad", false, "Switch Mullvad.")
 	flagOpenVPN   = flag.Bool("openvpn", false, "Switch OpenVPN.")
 	flagWireGuard = flag.Bool("wireguard", false, "Switch WireGuard.")
@@ -22,14 +30,14 @@ var (
 func main() {
 	flag.Parse()
 
-	s, err := func() (switchable, error) {
+	s, err := func() (Switchable, error) {
 		switch {
 		case *flagMullvad:
-			return mullvad()
+			return mullvad.New()
 		case *flagOpenVPN:
-			return openVPN()
+			return openvpn.New()
 		case *flagWireGuard:
-			return wireGuard()
+			return wireguard.New()
 		default:
 			return autodetect()
 		}
@@ -37,31 +45,29 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Fatal(serve(s))
+	log.Fatal(serve(s, *flagListen))
 }
 
-type switchable interface {
-	// Current returns current server, if known.
+type Switchable interface {
+	// Current returns the current server.
 	Current() (string, error)
-	// List lists available servers, if possible.
+	// List lists available servers.
 	List() ([]string, error)
-	// Switch switches to the specified server, if possible.
+	// Switch switches to the specified server.
 	Switch(server string) error
 }
 
 var errNotConfigured = errors.New("not configured")
 
-func autodetect() (switchable, error) {
-	for _, f := range []func() (switchable, error){
-		mullvad,
-		openVPN,
-		wireGuard,
+func autodetect() (Switchable, error) {
+	for _, f := range []func() (Switchable, error){
+		func() (Switchable, error) { return mullvad.New() },
+		func() (Switchable, error) { return openvpn.New() },
+		func() (Switchable, error) { return wireguard.New() },
 	} {
 		if s, err := f(); err == nil {
-			log.Fatal(serve(s))
-		} else if err != errNotConfigured {
-			log.Fatal(err)
+			return s, nil
 		}
 	}
-	return nil, fmt.Errorf("no supported VPN configuration found")
+	return nil, fmt.Errorf("no supported VPN found")
 }
