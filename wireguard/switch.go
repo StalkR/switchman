@@ -11,7 +11,7 @@ import (
 var endpointRE = regexp.MustCompile("(?m)^(Endpoint = .*)$")
 
 // Switch switches to the specified server.
-func (s *server) Switch(server string) error {
+func (s *Server) Switch(server string) error {
   found := false
   list, err := s.List()
   if err != nil {

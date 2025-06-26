@@ -76,7 +76,7 @@ type relay struct {
   MultihopPort int
 }
 
-func (s *server) fetchRelays() ([]relay, error) {
+func (s *Server) fetchRelays() ([]relay, error) {
   resp1, err := http.Get(apiv1URL)
   if err != nil {
     return nil, err
@@ -147,7 +147,7 @@ func (s *server) fetchRelays() ([]relay, error) {
 // findRelays finds the relays for this server.
 // If single-hop, it returns the single relay.
 // If multi-hop, it returns the entry relay then the exit.
-func (s *server) findRelays(server string) ([]relay, error) {
+func (s *Server) findRelays(server string) ([]relay, error) {
   host, sport, err := net.SplitHostPort(server)
   if err != nil {
     return nil, err

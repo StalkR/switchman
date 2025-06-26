@@ -42,7 +42,7 @@ Servers ({{len .Servers}}):
 </ul>`))
 
 // Indexable allows implementations to provide a custom index page instead of
-// the default which shows the list of server endpoints.
+// the default showing a list of servers.
 type Indexable interface {
 	// Index produces an HTML index.
 	Index(w io.Writer) error

@@ -8,12 +8,13 @@ import (
   "time"
 )
 
-func New() (*server, error) {
+// New creates a new Server to switch a mullvad WireGuard server.
+func New() (*Server, error) {
   const config = "/etc/wireguard/wg0.conf"
   if _, err := os.Stat(config); err != nil {
     return nil, err
   }
-  s := &server{
+  s := &Server{
     config: config,
   }
   current, err := s.Current()
@@ -28,7 +29,9 @@ func New() (*server, error) {
   return s, nil
 }
 
-type server struct {
+// A Server implements the ability to switch a mullvad WireGuard server.
+// It implements the Switchable and Indexable interfaces.
+type Server struct {
   config string
 
   m      sync.Mutex // protects below
@@ -36,7 +39,7 @@ type server struct {
   error  error
 }
 
-func (s *server) periodicallyFetchEndpoints() {
+func (s *Server) periodicallyFetchEndpoints() {
   for ; ; time.Sleep(24 * time.Hour) {
     relays, err := s.fetchRelays()
     s.m.Lock()
@@ -46,7 +49,7 @@ func (s *server) periodicallyFetchEndpoints() {
   }
 }
 
-func (s *server) listRelays() ([]relay, error) {
+func (s *Server) listRelays() ([]relay, error) {
   s.m.Lock()
   defer s.m.Unlock()
   return s.relays, s.error

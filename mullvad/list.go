@@ -5,7 +5,7 @@ import (
 )
 
 // List lists available servers.
-func (s *server) List() ([]string, error) {
+func (s *Server) List() ([]string, error) {
   relays, err := s.listRelays()
   if err != nil {
     return nil, err

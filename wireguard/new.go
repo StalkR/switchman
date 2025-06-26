@@ -4,16 +4,19 @@ import (
 	"os"
 )
 
-func New() (*server, error) {
+// New creates a new Server to switch a WireGuard server.
+func New() (*Server, error) {
 	const config = "/etc/wireguard/wg0.conf"
 	if _, err := os.Stat(config); err != nil {
 		return nil, err
 	}
-	return &server{
+	return &Server{
 		config: config,
 	}, nil
 }
 
-type server struct {
+// A Server implements the ability to switch a WireGuard server.
+// It implements the Switchable interface.
+type Server struct {
 	config string
 }

@@ -46,7 +46,8 @@ Servers ({{len .Relays}}):
 <br>
 `))
 
-func (s *server) Index(w io.Writer) error {
+// Index writes an HTML index page to switch the Server.
+func (s *Server) Index(w io.Writer) error {
   current, err := s.Current()
   if err != nil {
     return err

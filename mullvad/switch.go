@@ -14,7 +14,7 @@ var (
 )
 
 // Switch switches to the specified server.
-func (s *server) Switch(server string) error {
+func (s *Server) Switch(server string) error {
   current, err := s.Current()
   if err != nil {
     return err

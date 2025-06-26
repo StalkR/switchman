@@ -7,7 +7,7 @@ import (
 )
 
 // List lists available servers.
-func (s *server) List() ([]string, error) {
+func (s *Server) List() ([]string, error) {
   f, err := os.Open(s.config)
   if err != nil {
     return nil, err

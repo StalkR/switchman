@@ -48,6 +48,8 @@ func main() {
 	log.Fatal(serve(s, *flagListen))
 }
 
+// A Switchable implements support for a VPN that can be switched servers.
+// Optionally, it can also implement Indexable to provide a custom index.
 type Switchable interface {
 	// Current returns the current server.
 	Current() (string, error)

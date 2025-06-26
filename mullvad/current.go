@@ -7,7 +7,7 @@ import (
 )
 
 // Current returns the current server.
-func (s *server) Current() (string, error) {
+func (s *Server) Current() (string, error) {
   f, err := os.Open(s.config)
   if err != nil {
     return "", err
