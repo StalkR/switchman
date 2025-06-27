@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"sort"
+	"strings"
 )
 
 func serve(s Switchable, listen string) error {
@@ -76,12 +77,16 @@ func (s *server) handleSwitch(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Header().Set("Content-Type", "text/plain")
 	if err := s.Switch(r.URL.Query().Get("server")); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "ok\n")
+	if !acceptsHTML(r) {
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintf(w, "ok\n")
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // note: no xsrf protection
@@ -90,12 +95,16 @@ func (s *server) handleNext(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Header().Set("Content-Type", "text/plain")
 	if err := next(s); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "ok\n")
+	if !acceptsHTML(r) {
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintf(w, "ok\n")
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func next(s Switchable) error {
@@ -118,4 +127,17 @@ func next(s Switchable) error {
 		return fmt.Errorf("could not find next server")
 	}
 	return s.Switch(next)
+}
+
+func acceptsHTML(r *http.Request) bool {
+	for _, e := range strings.Split(r.Header.Get("Accept"), ",") {
+		if len(e) == 0 {
+			continue
+		}
+		media := strings.Split(e, ";")[0]
+		if strings.ToLower(media) == "text/html" {
+			return true
+		}
+	}
+	return false
 }
