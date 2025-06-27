@@ -63,7 +63,7 @@ Servers ({{len .Relays}})
     <tr>
       <th>Country</th>
       <th>City</th>
-      <th>Owned</th>
+      <th>Ownership</th>
       <th>Switch</th>
     </tr>
   </thead>
