@@ -6,23 +6,58 @@ import (
   "sort"
 )
 
-// TODO: multihop server selection
-var indexTmpl = template.Must(template.New("").Parse(`
-Current server: {{.Current}}
+var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width" />
+  <title>switchman</title>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const elEntry = document.getElementById('entry');
+    const elExit = document.getElementById('exit');
+    const elSwitch = document.getElementById('switch');
+    function updateSwitch(event) {
+      if (!elEntry.value || !elExit.value) return;
+      elSwitch.href = 'switch?server=' + encodeURIComponent(elEntry.value + ':' + elExit.value);
+    }
+    elEntry.addEventListener('change', updateSwitch);
+    elExit.addEventListener('change', updateSwitch);
+  });
+  </script>
+</head>
+<body>
+<p>Current server: {{.Current}}</p>
 {{if eq (len .CurrentRelays) 2}}
 <ul>
-  <li>{{$ := index .CurrentRelays 0}}entry: {{$.Country}}, {{$.City}}, {{if $.Owned}}owned{{else}}rented{{end}}</li>
-  <li>{{$ := index .CurrentRelays 1}}exit: {{$.Country}}, {{$.City}}, {{if $.Owned}}owned{{else}}rented{{end}}</li>
+  <li>{{with index .CurrentRelays 0}}entry: {{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}}</li>
+  <li>{{with index .CurrentRelays 1}}exit: {{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}}</li>
 </ul>
 {{end}}
 {{if eq (len .CurrentRelays) 1}}
 <ul>
-  <li>{{$ := index .CurrentRelays 0}}{{$.Country}}, {{$.City}}, {{if $.Owned}}owned{{else}}rented{{end}}
+  <li>{{with index .CurrentRelays 0}}{{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}}</li>
 </ul>
 {{end}}
-<br>
-Servers ({{len .Relays}}):
-<br>
+<form>
+  Multihop:
+  entry <select id="entry" name="entry">
+    <option value="">-</option>
+    {{range .Relays}}
+    <option value="{{.Hostname}}">{{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}</option>
+    {{end}}
+  </select>
+  exit <select id="exit" name="exit">
+    <option value="">-</option>
+    {{range .Relays}}
+    <option value="{{.MultihopPort}}">{{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}</option>
+    {{end}}
+  </select>
+  <a id="switch" href="#">switch</a>
+</form>
+<p>
+Servers ({{len .Relays}})
+</p>
 <table>
   <thead>
     <tr>
@@ -33,18 +68,18 @@ Servers ({{len .Relays}}):
     </tr>
   </thead>
   <tbody>
-{{range .Relays}}
-  <tr>
-    <td>{{.Country}}</td>
-    <td>{{.City}}</td>
-    <td>{{if .Owned}}owned{{else}}rented{{end}}</td>
-    <td><a href="switch?server={{.Hostname}}:{{.Port}}">switch</a></td>
-  </tr>
-{{end}}
+    {{range .Relays}}
+    <tr>
+      <td>{{.Country}}</td>
+      <td>{{.City}}</td>
+      <td>{{if .Owned}}owned{{else}}rented{{end}}</td>
+      <td><a href="switch?server={{.Hostname}}:{{.Port}}">switch</a></td>
+    </tr>
+    {{end}}
   </tbody>
 </table>
-<br>
-`))
+</body>
+</html>`))
 
 // Index writes an HTML index page to switch the Server.
 func (s *Server) Index(w io.Writer) error {
