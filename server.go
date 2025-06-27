@@ -33,14 +33,23 @@ func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var indexTmpl = template.Must(template.New("").Parse(`
+var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width" />
+  <title>switchman</title>
+</head>
+<body>
 Current server: {{.Current}}
 <br>
 Servers ({{len .Servers}}):
 <br>
 <ul>
 {{range .Servers}}<li><a href="switch?server={{.}}">{{.}}</a></li>{{end}}
-</ul>`))
+</ul>
+</body>
+</html>`))
 
 // Indexable allows implementations to provide a custom index page instead of
 // the default showing a list of servers.
