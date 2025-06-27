@@ -26,7 +26,7 @@ func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf8")
 	if err := index(w, s); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
