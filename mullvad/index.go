@@ -30,13 +30,13 @@ var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
 <p>Current server: {{.Current}}</p>
 {{if eq (len .CurrentRelays) 2}}
 <ul>
-  <li>{{with index .CurrentRelays 0}}entry: {{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}}</li>
-  <li>{{with index .CurrentRelays 1}}exit: {{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}}</li>
+  <li>{{with index .CurrentRelays 0}}entry: {{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}})</li>
+  <li>{{with index .CurrentRelays 1}}exit: {{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}})</li>
 </ul>
 {{end}}
 {{if eq (len .CurrentRelays) 1}}
 <ul>
-  <li>{{with index .CurrentRelays 0}}{{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}}</li>
+  <li>{{with index .CurrentRelays 0}}{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}){{end}}</li>
 </ul>
 {{end}}
 <form>
@@ -44,13 +44,13 @@ var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
   entry <select id="entry" name="entry">
     <option value="">-</option>
     {{range .Relays}}
-    <option value="{{.Hostname}}">{{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}</option>
+    <option value="{{.Hostname}}">{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}})</option>
     {{end}}
   </select>
   exit <select id="exit" name="exit">
     <option value="">-</option>
     {{range .Relays}}
-    <option value="{{.MultihopPort}}">{{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}</option>
+    <option value="{{.MultihopPort}}">{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}})</option>
     {{end}}
   </select>
   <a id="switch" href="#">switch</a>
@@ -61,6 +61,7 @@ Servers ({{len .Relays}})
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>Country</th>
       <th>City</th>
       <th>Ownership</th>
@@ -70,6 +71,7 @@ Servers ({{len .Relays}})
   <tbody>
     {{range .Relays}}
     <tr>
+      <td>{{.ID}}</td>
       <td>{{.Country}}</td>
       <td>{{.City}}</td>
       <td>{{if .Owned}}owned{{else}}rented{{end}}</td>

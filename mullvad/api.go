@@ -67,6 +67,7 @@ type apiv2Response struct {
 }
 
 type relay struct {
+  ID           string
   Hostname     string
   Port         int
   Owned        bool
@@ -131,6 +132,7 @@ func (s *Server) fetchRelays() ([]relay, error) {
       continue
     }
     servers = append(servers, relay{
+      ID:           r.Hostname,
       Hostname:     r.Hostname + relaySuffix,
       Port:         relayPort,
       Owned:        r.Owned,
