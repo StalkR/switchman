@@ -95,7 +95,7 @@ func (s *server) handleSwitch(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ok\n")
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	fmt.Fprint(w, "<script>window.location=document.referrer;</script>")
 }
 
 // note: no xsrf protection
@@ -113,7 +113,7 @@ func (s *server) handleNext(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ok\n")
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	fmt.Fprint(w, "<script>window.location=document.referrer;</script>")
 }
 
 func next(s Switchable) error {
