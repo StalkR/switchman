@@ -39,6 +39,9 @@ var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
   <li>{{with index .CurrentRelays 0}}{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}){{end}}</li>
 </ul>
 {{end}}
+{{if .LastError}}
+<p>Error fetching server list: {{.LastError}}</p>
+{{end}}
 <form>
   Multihop:
   entry <select id="entry" name="entry">
@@ -61,11 +64,12 @@ Servers ({{len .Relays}})
 <table>
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Country</th>
-      <th>City</th>
-      <th>Ownership</th>
-      <th>Switch</th>
+      <th align="left">ID</th>
+      <th align="left">Country</th>
+      <th align="left">City</th>
+      <th align="left">Ownership</th>
+      <th align="left">Active</th>
+      <th align="left">Switch</th>
     </tr>
   </thead>
   <tbody>
@@ -75,6 +79,7 @@ Servers ({{len .Relays}})
       <td>{{.Country}}</td>
       <td>{{.City}}</td>
       <td>{{if .Owned}}owned{{else}}rented{{end}}</td>
+      <td>{{if .Active}}active{{else}}<span style="color: red;">inactive</span>{{end}}</td>
       <td><a href="switch?server={{.Hostname}}:{{.Port}}">switch</a></td>
     </tr>
     {{end}}
@@ -93,10 +98,7 @@ func (s *Server) Index(w io.Writer) error {
   if err != nil {
     currentRelays = nil
   }
-  relays, err := s.listRelays()
-  if err != nil {
-    return err
-  }
+  relays, lastError := s.listRelays()
   sort.Slice(relays, func(i, j int) bool {
     if relays[i].Country == relays[j].Country {
       if relays[i].City == relays[j].City {
@@ -110,9 +112,11 @@ func (s *Server) Index(w io.Writer) error {
     Current       string
     CurrentRelays []relay
     Relays        []relay
+    LastError     error
   }{
     Current:       current,
     CurrentRelays: currentRelays,
     Relays:        relays,
+    LastError:     lastError,
   })
 }

@@ -70,6 +70,7 @@ type relay struct {
   ID           string
   Hostname     string
   Port         int
+  Active       bool
   Owned        bool
   Country      string
   City         string
@@ -128,13 +129,11 @@ func (s *Server) fetchRelays() ([]relay, error) {
 
   var servers []relay
   for _, r := range v2.WireGuard.Relays {
-    if !r.Active {
-      continue
-    }
     servers = append(servers, relay{
       ID:           r.Hostname,
       Hostname:     r.Hostname + relaySuffix,
       Port:         relayPort,
+      Active:       r.Active,
       Owned:        r.Owned,
       Country:      locations[r.Location].Country,
       City:         locations[r.Location].City,

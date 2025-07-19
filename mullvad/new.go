@@ -43,7 +43,10 @@ func (s *Server) periodicallyFetchEndpoints() {
   for ; ; time.Sleep(24 * time.Hour) {
     relays, err := s.fetchRelays()
     s.m.Lock()
-    s.relays = relays
+    // if error, keep previous, it's stale but better than nothing
+    if err == nil {
+      s.relays = relays
+    }
     s.error = err
     s.m.Unlock()
   }
