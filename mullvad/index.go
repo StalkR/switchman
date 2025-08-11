@@ -30,13 +30,28 @@ var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
 <p>Current server: {{.Current}}</p>
 {{if eq (len .CurrentRelays) 2}}
 <ul>
-  <li>{{with index .CurrentRelays 0}}entry: {{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}})</li>
-  <li>{{with index .CurrentRelays 1}}exit: {{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}{{end}})</li>
+  <li>
+    {{with index .CurrentRelays 0}}entry: {{.ID}} ({{.Country}}, {{.City}},
+      {{if .Owned}}owned{{else}}rented{{end}},
+      {{if .Active}}active{{else}}<span style="color: red;">inactive</span>{{end}})
+    {{end}}
+  </li>
+  <li>
+    {{with index .CurrentRelays 1}}exit: {{.ID}} ({{.Country}}, {{.City}},
+      {{if .Owned}}owned{{else}}rented{{end}},
+      {{if .Active}}active{{else}}<span style="color: red;">inactive</span>{{end}})
+    {{end}}
+  </li>
 </ul>
 {{end}}
 {{if eq (len .CurrentRelays) 1}}
 <ul>
-  <li>{{with index .CurrentRelays 0}}{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}){{end}}</li>
+  <li>
+    {{with index .CurrentRelays 0}}{{.ID}} ({{.Country}}, {{.City}},
+      {{if .Owned}}owned{{else}}rented{{end}},
+      {{if .Active}}active{{else}}<span style="color: red;">inactive</span>{{end}})
+    {{end}}
+  </li>
 </ul>
 {{end}}
 {{if .LastError}}
@@ -47,13 +62,13 @@ var indexTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>
   entry <select id="entry" name="entry">
     <option value="">-</option>
     {{range .Relays}}
-    <option value="{{.Hostname}}">{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}})</option>
+    <option value="{{.Hostname}}">{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}, {{if .Active}}active{{else}}inactive{{end}})</option>
     {{end}}
   </select>
   exit <select id="exit" name="exit">
     <option value="">-</option>
     {{range .Relays}}
-    <option value="{{.MultihopPort}}">{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}})</option>
+    <option value="{{.MultihopPort}}">{{.ID}} ({{.Country}}, {{.City}}, {{if .Owned}}owned{{else}}rented{{end}}, {{if .Active}}active{{else}}inactive{{end}})</option>
     {{end}}
   </select>
   <a id="switch" href="#">switch</a>
