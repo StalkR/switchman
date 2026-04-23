@@ -15,6 +15,7 @@ import (
 	"log"
 
 	"github.com/StalkR/switchman/mullvad"
+	"github.com/StalkR/switchman/mullvadapp"
 	"github.com/StalkR/switchman/openvpn"
 	"github.com/StalkR/switchman/wireguard"
 )
@@ -22,9 +23,10 @@ import (
 var (
 	flagListen = flag.String("listen", ":81", "Port to listen on for HTTP requests.")
 
-	flagMullvad   = flag.Bool("mullvad", false, "Switch Mullvad.")
-	flagOpenVPN   = flag.Bool("openvpn", false, "Switch OpenVPN.")
-	flagWireGuard = flag.Bool("wireguard", false, "Switch WireGuard.")
+	flagMullvad    = flag.Bool("mullvad", false, "Switch Mullvad (via plain WireGuard).")
+	flagMullvadApp = flag.Bool("mullvadapp", false, "Switch Mullvad (via app cli).")
+	flagOpenVPN    = flag.Bool("openvpn", false, "Switch OpenVPN.")
+	flagWireGuard  = flag.Bool("wireguard", false, "Switch WireGuard.")
 )
 
 func main() {
@@ -34,6 +36,8 @@ func main() {
 		switch {
 		case *flagMullvad:
 			return mullvad.New()
+		case *flagMullvadApp:
+			return mullvadapp.New()
 		case *flagOpenVPN:
 			return openvpn.New()
 		case *flagWireGuard:
@@ -64,6 +68,7 @@ var errNotConfigured = errors.New("not configured")
 func autodetect() (Switchable, error) {
 	for _, f := range []func() (Switchable, error){
 		func() (Switchable, error) { return mullvad.New() },
+		func() (Switchable, error) { return mullvadapp.New() },
 		func() (Switchable, error) { return openvpn.New() },
 		func() (Switchable, error) { return wireguard.New() },
 	} {

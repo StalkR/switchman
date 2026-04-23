@@ -9,7 +9,9 @@
 
 switchman is a small web server to switch VPN exits. Supported VPNs:
 
-- Mullvad: switch between servers fetched from their API, single config (`wg0.conf`)
+- Mullvad (via plain WireGuard): switch between servers fetched from the API, then update
+  WireGuard config at `/etc/wireguard/wg0.conf` and use `wg-quick`
+- Mullvad (via app cli): run `mullvad` app cli commands to list relays and set settings
 - basic OpenVPN: switch between `remote` commented out with `;`, single config (`*.conf`)
 - basic WireGuard: switch between `Endpoint` commented out with `#`, single config (`wg0.conf`)
 
