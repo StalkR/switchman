@@ -6,16 +6,19 @@ import (
 )
 
 // Switch switches to the specified location.
-// Location: country (e.g. us), country city (e.g. us nyc) or hostname (e.g. us-nyc-wg-001).
+// Location can be:
+// - country (e.g. us), 1 argument
+// - country and city (e.g. us nyc), 2 arguments
+// - hostname (e.g. us-nyc-wg-001), 1 argument
 func (s *Server) Switch(location string) error {
-  arg := []string{"relay", "set", "location"}
-  switch len(strings.Split(location, " ")) {
+  cmd := []string{"relay", "set", "location"}
+  switch args := strings.Split(location, " "); len(args) {
   case 1, 2:
-    arg = append(arg, arg...)
+    cmd = append(cmd, args...)
   default:
     return fmt.Errorf("invalid location")
   }
-  if _, err := run("mullvad", arg...); err != nil {
+  if _, err := run("mullvad", cmd...); err != nil {
     return fmt.Errorf("could not set location to %v: %v", location, err)
   }
   return nil
