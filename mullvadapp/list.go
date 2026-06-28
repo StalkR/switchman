@@ -2,6 +2,7 @@ package mullvadapp
 
 import (
   "fmt"
+  "sort"
   "strings"
 )
 
@@ -56,6 +57,15 @@ func (s *Server) listRelays() ([]*relay, error) {
     // relays by hostname
     relays = append(relays, r)
   }
+  sort.Slice(relays, func(i, j int) bool {
+    if relays[i].Country == relays[j].Country {
+      if relays[i].City == relays[j].City {
+        return relays[i].Hostname < relays[j].Hostname
+      }
+      return relays[i].City < relays[j].City
+    }
+    return relays[i].Country < relays[j].Country
+  })
   return relays, nil
 }
 
